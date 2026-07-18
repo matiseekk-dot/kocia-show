@@ -67,7 +67,7 @@
     display: flex;
     align-items: center;
     justify-content: space-around;
-    padding: 8px 12px;
+    padding: max(8px, env(safe-area-inset-top)) 12px 8px;
     background: rgba(0, 0, 0, 0.35);
     backdrop-filter: blur(8px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -130,6 +130,28 @@
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 2px 0 var(--dark));
     letter-spacing: 1px;
+  }
+
+  /* Global back button - injected via JS into every view */
+  .back-to-menu {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 8px 14px;
+    border-radius: 14px;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin-bottom: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: transform 0.1s, background 0.15s;
+  }
+  .back-to-menu:active {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.2);
   }
 
   /* ===== Home ===== */
@@ -2164,6 +2186,16 @@
 
   document.querySelectorAll('[data-goto]').forEach(el => {
     el.addEventListener('click', () => goto(el.dataset.goto));
+  });
+
+  // Auto-inject "Back to menu" button into every view except home
+  document.querySelectorAll('.view').forEach(view => {
+    if (view.id === 'view-home') return;
+    const backBtn = document.createElement('button');
+    backBtn.className = 'back-to-menu';
+    backBtn.innerHTML = '← Menu';
+    backBtn.addEventListener('click', () => goto('home'));
+    view.insertBefore(backBtn, view.firstChild);
   });
 
   function resetAll() {
